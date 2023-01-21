@@ -38,9 +38,14 @@ get_input:
    cmp r0, #READERROR       @ Check for a read error.
    beq readerror            @ If there was a read error go handle it. 
    ldr r1, =intInput        @ Have to reload r1 because it gets wiped out. 
-   ldr r5, [r1]             @ Read the contents of intInput and store in r5 so that
-                            @ it can be looped on. 
+   ldr r1, [r1]             @ Read the contents of intInput and store in r1 so that
+                            @ it can be looped the correct number of times.
+   ldr r5, =intInput        @ Load the address of the counter into r5.
+   ldr r5, [r5]             @ Read the contents of intInput and store in r5 so that
+                             @ it can be looped the correct number of times.
 
+
+validate:
 @============Check for valid input===========================
    cmp r1, #0               @ Check for a negative number.
    blt invalid_input        @ If the number is negative go handle it.
@@ -55,7 +60,7 @@ loop:
 
    ldr r0, =strHelloWorld   @ Put address into r0 for print.
    bl printf                @ Print the message.
-   sub r5, #1               @ Decrement the counter.
+   subs r5, r5, #1          @ Decrement the counter.
    cmp r5, #0               @ Check if the counter is 0.
    bne loop                 @ If the counter is not 0 go back and print another message.
    b exit                   @ If the counter is 0 exit the program.
