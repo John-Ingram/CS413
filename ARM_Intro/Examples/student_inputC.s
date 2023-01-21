@@ -51,7 +51,7 @@ get_input:
 @ Set up r0 with the address of input pattern.
 @ scanf puts the input value at the address stored in r1. We are going
 @ to use the address for our declared variable in the data section - intInput. 
-@ After the call to scanf the input is at the address pointed to by r1 which 
+@ After the call to sanf the input is at the address pointed to by r1 which 
 @ in this case will be intInput. 
 
    ldr r0, =numInputPattern @ Setup to read in one number.
