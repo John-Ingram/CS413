@@ -48,7 +48,7 @@ get_input:
 validate:
 @============Check for valid input===========================
    cmp r1, #0               @ Check for a negative number.
-   blt invalid_input        @ If the number is negative go handle it.
+   ble invalid_input        @ If the number is negative go handle it.
    cmp r1, #11              @ Check for a number greater than 10.
    bge invalid_input        @ If the number is greater than 10 go handle it.
 @============Input is valid, continue to loop================
