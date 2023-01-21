@@ -1,0 +1,24 @@
+The purpose of this assignment is to get the students prepared to start work on the ARM assembly programs for the Lab.
+
+Use these links to: helloworld.s
+Download helloworld.s and student_inputC.s
+
+Download student_inputC.s ARM assembly programs  OR look into the Files --> ARM Sample Programs on Canvas write an ARM program that:
+
+1.    Provides a welcome and instruction messages.
+2.    Prompt the user to enter an integer between 0 and 10.
+3.    Verify the proper input value. Reject any invalid inputs (negative, greater than 10) and re-prompt for a valid input value.
+4.    Print “Hello world.” The number of times the user entered. Each “Hello world.” will be printed on a separate line.
+5.    Code is to exit once the required messages are printed the requested number of times.
+
+The code comments are to include:
+
+Your Name
+
+Your UAH email address
+
+CS413-<<section>> <<Term and Year>>
+
+Assemble, link and run your program. Once you have it working upload the .s as your submission. Name your program yourlastname.s.
+
+The grader will download your program from Canvas, assemble, link and run your program. Your source code will also be reviewed and points will be taken off if the code comments are not what is required.
