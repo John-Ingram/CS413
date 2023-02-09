@@ -1,0 +1,34 @@
+The purpose of this program is to get the student to use the stack to pass parameters to and from their own defined subroutines/functions in ARM Assembly. 
+
+Write an ARM Assembly program that will calculate the area of the following four plane shapes:
+a)	Triangle
+b)	Rectangle
+c)	Trapezoid
+d)	Square
+
+All number inputs are integers and all calculation results are provided in integer format. Any fractional calculations are to be truncated. 
+
+The program must all meet the following requirements: 
+1.	Each area calculation must be accessed as a subroutine/function (ARM instruction BL). 
+2.	The operands are passed to the function via the stack. Use the ARM pseudo instructions PUSH and POP. To ensure you are properly implementing the stack the registers used in your main routine to hold the operands must be different than those used in the subroutines. For example, your calling routine will push r4 and r5 on the stack but the called routine will pop into registers r10 and r11. 
+3.	The function returns the results on the top of the stack. 
+4.	Your program is to print a welcome/instruction messages to the user.
+5.	The user is prompted to enter the calculation type and the appropriate number of positive integers. 
+6.	The program shall verify the user input is valid and report any entry errors. Ensure your program checks for non-integer inputs (string, floating-point, characters). Invalid entries are reported and user prompted again to enter a valid input. 
+7.	The program shall perform the calculation, display the results and report any overflow errors. Overflow is when the results do not fit into 32-bit unsigned format. 
+8.	Ask the user if they want to continue with another calculation or quit the program. 
+
+The GTAs will run your program to ensure correct functioning and will also review your code to ensure you have properly implemented the functions and stacks. 
+
+As with all programs your program: 
+1.	Checks user inputs for errors and prints appropriate error messages. 
+2.	All outputs are clearly labeled. 
+3.	Contains generous code documentation. 
+
+Your program needs to be well documented. Points will be deducted for code which is poorly documented. See the Student Lab Handbook for expected code comments. 
+
+Prework:
+Students need to have a file which, at the very least contain the following:
+1.	Proper header information that include commands that assemble, link, run the file and run the file using the debugger that is specific for their file.
+2.	Data section that defines all the output strings.
+3.	Code comment sections that describe the major sections of the code with the functions for the four area calculations clearly identified.
