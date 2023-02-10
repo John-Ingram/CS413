@@ -73,9 +73,18 @@ invalid_input:
 
 @==================================================================================
 
+invalid_number:
+@============Input is invalid, print an error and then return======================
+   ldr r0, =errormsg   @ Put address into r0 for print.
+   bl printf                @ Print the error message.
+   bx lr                    @ Return to the calling subroutine.
+
+@==================================================================================
+
 @------------------------------------------------------------
 triangle_prompt:
 @ Prompt the user for the base and height of the triangle
+   getTBase:
    ldr r0, =triangleBasePrompt @ Load the address of the prompt message into r0
    bl printf @ Call printf to print the prompt message
 
@@ -88,9 +97,16 @@ triangle_prompt:
    ldr r1, =intInput        @ Have to reload r1 because it gets wiped out. 
    ldr r1, [r1]             @ Read the contents of intInput and store in r1 
 
+   @ Check if the input is negative or zero
+   cmp r1, #0
+   
+
+   ble getTBase
+
    @ Push the base onto the stack, for use in the calculation subroutine
    push {r1}
 
+   getTHeight:
    ldr r0, =triangleHeightPrompt @ Load the address of the prompt message into r0
    bl printf @ Call printf to print the prompt message
 
@@ -102,6 +118,10 @@ triangle_prompt:
    beq readerror            @ If there was a read error go handle it. 
    ldr r1, =intInput        @ Have to reload r1 because it gets wiped out. 
    ldr r1, [r1]             @ Read the contents of intInput and store in r1 
+
+   @ Check if the input is negative or zero
+   cmp r1, #0
+   ble getTHeight
 
    @ Push the height onto the stack, for use in the calculation subroutine
    push {r1}
@@ -154,6 +174,7 @@ triangle_calc:
 @------------------------------------------------------------
 rectangle_prompt:
 @ Prompt the user for the width and height of the rectangle
+   getRWidth:
    ldr r0, =rectangleWidthPrompt @ Load the address of the prompt message into r0
    bl printf @ Call printf to print the prompt message
 
@@ -166,9 +187,16 @@ rectangle_prompt:
    ldr r1, =intInput        @ Have to reload r1 because it gets wiped out. 
    ldr r1, [r1]             @ Read the contents of intInput and store in r1 
 
+   @ Check if the input is negative or zero
+   cmp r1, #0
+   
+
+   ble getRWidth
+
    @ Push the width onto the stack, for use in the calculation subroutine
    push {r1}
 
+   getRHeight:
    ldr r0, =rectangleHeightPrompt @ Load the address of the prompt message into r0
    bl printf @ Call printf to print the prompt message
 
@@ -180,6 +208,12 @@ rectangle_prompt:
    beq readerror            @ If there was a read error go handle it. 
    ldr r1, =intInput        @ Have to reload r1 because it gets wiped out. 
    ldr r1, [r1]             @ Read the contents of intInput and store in r1 
+
+   @ Check if the input is negative or zero
+   cmp r1, #0
+   
+
+   ble getRHeight
 
    @ Push the height onto the stack, for use in the calculation subroutine
    push {r1}
@@ -229,6 +263,7 @@ rectangle_calc:
 @------------------------------------------------------------
 trapezoid_prompt:
 @ Prompt the user for the width and height of the trapezoid
+   getTBaseA:
    ldr r0, =trapezoidBaseAPrompt @ Load the address of the prompt message into r0
    bl printf @ Call printf to print the prompt message
 
@@ -241,9 +276,16 @@ trapezoid_prompt:
    ldr r1, =intInput        @ Have to reload r1 because it gets wiped out. 
    ldr r1, [r1]             @ Read the contents of intInput and store in r1 
 
+   @ Check if the input is negative or zero
+   cmp r1, #0
+   
+
+   ble getTBaseA
+
    @ Push the width onto the stack, for use in the calculation subroutine
    push {r1}
 
+   getTBaseB:
    ldr r0, =trapezoidBaseBPrompt @ Load the address of the prompt message into r0
    bl printf @ Call printf to print the prompt message
 
@@ -256,9 +298,16 @@ trapezoid_prompt:
    ldr r1, =intInput        @ Have to reload r1 because it gets wiped out. 
    ldr r1, [r1]             @ Read the contents of intInput and store in r1 
 
+   @ Check if the input is negative or zero
+   cmp r1, #0
+   
+
+   ble getTBaseB
+
    @ Push the width onto the stack, for use in the calculation subroutine
    push {r1}
 
+   getTrapHeight:
    ldr r0, =trapezoidHeightPrompt @ Load the address of the prompt message into r0
    bl printf @ Call printf to print the prompt message
 
@@ -270,6 +319,12 @@ trapezoid_prompt:
    beq readerror            @ If there was a read error go handle it. 
    ldr r1, =intInput        @ Have to reload r1 because it gets wiped out. 
    ldr r1, [r1]             @ Read the contents of intInput and store in r1 
+
+   @ Check if the input is negative or zero
+   cmp r1, #0
+   
+
+   ble getTrapHeight
 
    @ Push the height onto the stack, for use in the calculation subroutine
    push {r1}
@@ -325,6 +380,7 @@ trapezoid_calc:
 @------------------------------------------------------------
 square_prompt:
 @ Prompt the user for the side of the square
+   getSqSide:
    ldr r0, =squareSidePrompt @ Load the address of the prompt message into r0
    bl printf @ Call printf to print the prompt message
 
@@ -336,6 +392,12 @@ square_prompt:
    beq readerror            @ If there was a read error go handle it. 
    ldr r1, =intInput        @ Have to reload r1 because it gets wiped out. 
    ldr r1, [r1]             @ Read the contents of intInput and store in r1 
+
+   @ Check if the input is negative or zero
+   cmp r1, #0
+   
+
+   ble getSqSide
 
    @ Push the side onto the stack, for use in the calculation subroutine
    push {r1}
@@ -428,16 +490,6 @@ clear_input_buffer:
    
    pop {pc}
 @------------------------------------------------------------
-
-@------------------------------------------------------------
-validate_math_numbers:
-@ Validate that the number on the stack can be used for math
-pop {r1}
-
-
-@------------------------------------------------------------
-
-
 
 
 
