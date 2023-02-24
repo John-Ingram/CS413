@@ -90,46 +90,64 @@ checkSelection:
 @ If the input is valid, put the item name into r1 and put the item price into r4.
 @ also branch to the item selected routine. 
 @ If the input is invalid, branch to the invalidSelection routine.
+@ Also push a numerical code onto the stack for the item selected.
+@ Gum = 71, Peanuts = 80, Cheese Crackers = 67, M&Ms = 77
     
         cmp r6, #71 @ Check for G
         ldreq r1, =strGum
         moveq r4, #50
-        beq itemSelected
+        moveq r12, #71
+        push {r12}
+        beq checkGum
     
         cmp r6, #103 @ Check for g
         ldreq r1, =strGum
         moveq r4, #50
-        beq itemSelected
+        moveq r12, #71
+        push {r12}
+        beq checkGum
 
         cmp r6, #80 @ Check for P
         ldreq r1, =strPeanuts
         moveq r4, #55
-        beq itemSelected
+        moveq r12, #80
+        push {r12}
+        beq checkPeanuts
     
         cmp r6, #112 @ Check for p
         ldreq r1, =strPeanuts
         moveq r4, #55
-        beq itemSelected
+        moveq r12, #80
+        push {r12}
+        beq checkPeanuts
     
         cmp r6, #67 @ Check for C
         ldreq r1, =strCheeseCrackers
         moveq r4, #65
-        beq itemSelected
+        moveq r12, #67
+        push {r12}
+        beq checkCheeseCrackers
     
         cmp r6, #99 @ Check for c
         ldreq r1, =strCheeseCrackers
         moveq r4, #65
-        beq itemSelected
+        moveq r12, #67
+        push {r12}
+        beq checkCheeseCrackers
     
         cmp r6, #77 @ Check for M
         ldreq r1, =strMms
         moveq r4, #100
-        beq itemSelected
+        moveq r12, #77
+        push {r12}
+        beq checkMms
     
         cmp r6, #109 @ Check for m
         ldreq r1, =strMms
         moveq r4, #100
-        beq itemSelected
+        moveq r12, #77
+        push {r12}
+        beq checkMms
 
         @ Check for secret code.
         cmp r6, #83 @ Check for S
@@ -144,6 +162,10 @@ checkSelection:
 secretCode:
 @*******************
 @ Display the stock of the vending machine.
+
+    @ Welcome the user to the secret menu.
+    ldr r0, =strSecretWelcome
+    bl  printf
 
     @ Print the Gum stock.
     ldr r0, =strGumStock
@@ -216,6 +238,7 @@ itemConfirmed:
 @ The user has confirmed the item they want. Display the item price and ask the user to enter the
 @ Amount of money they want to enter. 
 
+
     @ Copy the price of the treat into r1 so we can display it now.
     mov r1, r4
 
@@ -248,6 +271,44 @@ itemConfirmed:
     ldrb r1, [r0]
 
     b checkMoney
+
+@*******************
+@ Check stock routines
+@*******************
+@ Check if the item is in stock. If it is, continue with program execution. If it is not, display a
+@ message informing the user to make another selection
+
+checkGum:
+    @ Check if there is any Gum in stock. If there is, 
+    cmp r8, #0
+    bgt itemSelected
+    b notInStock
+
+checkPeanuts:
+    @ Check if there is any Peanuts in stock. If there is, 
+    cmp r9, #0
+    bgt itemSelected
+    b notInStock
+
+checkCheeseCrackers:
+    @ Check if there is any Cheese Crackers in stock. If there is, 
+    cmp r10, #0
+    bgt itemSelected
+    b notInStock
+
+checkMms:
+    @ Check if there is any M&Ms in stock. If there is, 
+    cmp r11, #0
+    bgt itemSelected
+    b notInStock
+
+notInStock:
+    @ The item is not in stock.
+    ldr r0, =strOutOfStock
+    bl  printf
+    b promptSelection
+
+
 
 @*******************
 getMoreMoney:
@@ -328,19 +389,33 @@ checkMoney:
     ldr r0, =strChange
     bl printf
 
-    @ Find what we dispensed, and update the inventory.
-    cmp r5, =strGum
-    subeq r8, #1
+    @ Find what we dispensed using the code set into r12, and update the inventory.
+    @ Gum = 71, Peanuts = 80, Cheese Crackers = 67, M&Ms = 77
+    pop {r12}
 
-    cmp r5, =strPeanuts
-    subeq r9, #1
+    cmp r12, #71
+    subeq r8, r8, #1
 
-    cmp r5, =strCheeseCrackers
-    subeq r10, #1
+    cmp r12, #80
+    subeq r9, r9, #1
 
-    cmp r5, =strMms
-    subeq r11, #1
+    cmp r12, #67
+    subeq r10, r10, #1
 
+    cmp r12, #77
+    subeq r11, r11, #1
+
+    @ If the inventory is empty, display a message and exit the program.
+    
+    @ Add up the inventory in r12 to see if it is empty.
+    mov r12, #0
+    add r12, r8, r9
+    add r12, r12, r10
+    add r12, r12, r11
+
+    cmp r12, #0
+    beq myexit
+    
 
     b promptSelection
 
@@ -352,7 +427,7 @@ invalidSelection:
     ldr r0, =strInvalidSelection @ Put the address of my string into the first parameter
     bl  printf                   @ Call the C printf to display input prompt. 
 
-    b getSelection
+    b promptSelection
 
 @***********
 readerror:
@@ -376,6 +451,10 @@ readerror:
 myexit:
 @*******************
 @ End of my code. Force the exit and return control to OS
+
+    @ Display the out of inventory message.
+    ldr r0, =strOutOfInventory
+    bl  printf
 
    mov r7, #0x01 @ SVC call to exit
    mov r0, #0    @ Exit code 0
@@ -460,6 +539,14 @@ strMoreMoney: .asciz "\nPlease deposit more money. Ballance remaining: $0.%d\nDi
 @ Enough money has been entered.
 .balign 4
 strItemDispensed: .asciz "\nThank you for your payment.\n %s dispensed.\n"
+
+@ Out of stock message.
+.balign 4
+strOutOfStock: .asciz "\nSorry, that item is out of stock. Please try a different item.\n"
+
+@ Out of inventory message.
+.balign 4
+strOutOfInventory: .asciz "\nSorry, the vending machine is out of inventory. \nPlease contact the company to let them know to refill the machine.\n"
 
 @ Change returned to user.
 .balign 4
