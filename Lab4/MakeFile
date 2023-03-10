@@ -1,9 +1,0 @@
-# Make Lab1 (Called Ingram)
-
-# Compile the program
-Ingram: Ingram.o
-	gcc -o Ingram Ingram.o
-
-# Assemble the program
-Ingram.o: Ingram.s
-	as -o Ingram.o Ingram.s
