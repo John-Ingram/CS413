@@ -2,7 +2,7 @@
 @ Author:   John Ingram
 @ Email:    jsi0004@uah.edu
 @ Class:    CS413-01 Spring 2023
-@ Date:     02/23/2023
+@ Date:     03/10/2023
 @ 
 @ Description: This program will simulate the operation of a vending machine. The machine will dispense,
 @ upon reception of the correct amount of money, a choice of Gum, Peanuts, Cheese Crackers, or
@@ -24,9 +24,22 @@
 @
 @ Use these commands to assemble, link, run and debug this program:
 @    as -o Ingram.o Ingram.s
-@    gcc -o Ingram Ingram.o
+@    gcc -o Ingram Ingram.o -lwiringPi
 @    ./Ingram ;echo $?
 @    gdb --args ./Ingram 
+@ Define the constants for this code. 
+
+OUTPUT = 1 @ Used to set the selected GPIO pins to output only. 
+ON     = 1 @ Turn the LED on.
+OFF    = 0 @ Turn the LED off.
+
+RED    = 5 @ Pin number from wiringPi for red led
+YELLOW = 4 @ Pin number from wiringPi for yellow led
+GREEN  = 3 @ Pin number from wiringPi for green led
+BLUE   = 2 @ Pin number from wiringPi for blue led
+
+.text
+.balign 4
 
 .equ READERROR, 0 @Used to check for scanf read error. 
 
@@ -35,6 +48,7 @@
 main:
 @ push the link register onto the stack.
     push {lr}
+    b init
 
 @ Print welcome message and instructions to user.
 
@@ -44,6 +58,15 @@ welcome:
     @ Welcome the user to the vending machine.
     ldr r0, =strWelcome @ Put the address of my string into the first parameter
     bl  printf          @ Call the C printf to display input prompt. 
+
+    @ Turn on the Red LED for 5 seconds.
+    ldr r2, =red_LED
+    ldr r1, =fiveS
+    ldr r1, [r1]
+    bl  turnOnLED
+    @ Turn off the Red LED.
+    ldr r2, =red_LED
+    bl  turnOffLED
 
     @ Stock the vending machine with 2 of each item.
     @ Gum r8
@@ -393,20 +416,33 @@ checkMoney:
     @ Gum = 71, Peanuts = 80, Cheese Crackers = 67, M&Ms = 77
     pop {r12}
 
+
     cmp r12, #71
+    @ If the item is Gum, set r2 to the address of the LED for Gum, and subtract one from the inventory.
     subeq r8, r8, #1
+    ldreq r2, =red_LED
 
     cmp r12, #80
+    @ If the item is Peanuts, set r2 to the address of the LED for Peanuts, and subtract one from the inventory.
     subeq r9, r9, #1
+    ldreq r2, =yellow_LED
+ 
 
     cmp r12, #67
+    @ If the item is Cheese Crackers, set r2 to the address of the LED for Cheese Crackers, and subtract one from the inventory.
     subeq r10, r10, #1
+    ldreq r2, =green_LED
 
     cmp r12, #77
+    @ If the item is M&Ms, set r2 to the address of the LED for M&Ms, and subtract one from the inventory.
     subeq r11, r11, #1
+    ldreq r2, =blue_LED
+
+    @ Do the vending sequence.
+    b ledSequence
 
     @ If the inventory is empty, display a message and exit the program.
-    
+    itemVended:
     @ Add up the inventory in r12 to see if it is empty.
     mov r12, #0
     add r12, r8, r9
@@ -418,6 +454,154 @@ checkMoney:
     
 
     b promptSelection
+
+
+
+@******************LED STUFF*********************
+@ This section of code will have code to turn on the LEDS
+@ To use the digialWrite function:
+@    r0 - must contain the pin number for the GPIO per the header file info
+@    r1 - set to 1 to turn the output on or to 0 to turn the output off.
+@
+@ To use the delay function:
+@    r0 - must contains the number of miliseconds to delay. 
+@
+@ Delay must be called after the digitalWrite function otherwise the LED will 
+@ blink on and off very quickly.
+@
+@ For this code, we will expect
+@    r0 - to be changed after the function returns.
+@    r1 - contains the number of miliseconds to delay.
+@    r2 - contains which LED to turn on or off.
+@ No other registers will be used.
+
+@*******************
+init:
+@*******************
+@ Initialize the GPIO pins for the LEDs
+@ set the blue LED mode to output
+        ldr     r0, =blue_LED
+        ldr     r0, [r0]
+        mov     r1, #OUTPUT
+        bl      pinMode
+
+@ set the green LED mode to output
+
+        ldr     r0, =green_LED
+        ldr     r0, [r0]
+        mov     r1, #OUTPUT
+        bl      pinMode
+
+@ set the yellow LED mode to output
+
+        ldr     r0, =yellow_LED
+        ldr     r0, [r0]
+        mov     r1, #OUTPUT
+        bl      pinMode
+
+@ set the red LED mode to output
+
+        ldr     r0, =red_LED
+        ldr     r0, [r0]
+        mov     r1, #OUTPUT
+        bl      pinMode
+
+@ done initializing the GPIO pins for the LEDs, so branch to the main program
+        b       welcome
+
+
+@*******************
+turnOnLED:
+@*******************
+@ This function will turn on the LED that is passed in r2.
+@ The number of miliseconds to delay is passed in r1.
+@ r0 will be changed after the function returns.
+@ Push the link register onto the stack so we can return to the main program
+        push    {lr}
+@ Push the number of miliseconds to delay onto the stack so we can use it later
+        push    {r1}
+@ Write a logic one to turn the LED to on.
+        ldr     r0, [r2]
+        mov     r1, #ON
+        bl      digitalWrite
+
+@ Run the delay otherwise it blinks so fast you never see it!
+        pop     {r0}
+        bl      delay
+
+@ Pop the link register off the stack and return to the main program
+        pop     {pc}
+
+@*******************
+turnOffLED:
+@*******************
+@ This function will blink the LED that is passed in r2.
+@ r0 will be changed after the function returns.
+@ Push the link register onto the stack so we can return to the main program
+        push    {lr}
+@ Write a logic zero to turn the LED to off.
+        ldr     r0, [r2]
+        mov     r1, #OFF
+        bl      digitalWrite
+
+@ Run the delay otherwise it blinks so fast you never see it!
+        ldr     r0, =oneS
+        ldr     r0, [r0]
+        bl      delay
+
+@ Pop the link register off the stack and return to the main program
+        pop     {pc}
+
+@*******************
+ledSequence:
+@*******************
+@ This function will do the 'dispense' sequence for the LED passed in r2.
+@ push r2 onto the stack so we can use for each time we turn the LED on and off
+        push    {r2}
+    
+    pop     {r2}
+    push    {r2}
+    ldr r1, =oneS
+    ldr r1, [r1]
+    bl  turnOnLED
+    @ Turn off the Red LED.
+    pop     {r2}
+    push    {r2}
+    bl  turnOffLED@ Turn on the Red LED for 1 seconds.
+    pop     {r2}
+    push    {r2}
+    ldr r1, =oneS
+    ldr r1, [r1]
+    bl  turnOnLED
+    @ Turn off the Red LED.
+    pop     {r2}
+    push    {r2}
+    bl  turnOffLED
+    @ Turn on the Red LED for 1 seconds.
+    pop     {r2}
+    push    {r2}
+    ldr r1, =oneS
+    ldr r1, [r1]
+    bl  turnOnLED
+    @ Turn off the Red LED.
+    pop     {r2}
+    push    {r2}
+    bl  turnOffLED
+    @ Turn on the Red LED for 5 seconds.
+    pop     {r2}
+    push    {r2}
+    ldr r1, =fiveS
+    ldr r1, [r1]
+    bl  turnOnLED
+    @ Turn off the Red LED.
+    pop     {r2}
+    bl  turnOffLED
+
+@ The item has been vended so branch back to the main program
+    b       itemVended
+
+@**************END LED STUFF*********************
+
 
 @*******************
 invalidSelection:
@@ -456,6 +640,15 @@ myexit:
     ldr r0, =strOutOfInventory
     bl  printf
 
+    @ Turn on the Red LED for 5 seconds.
+    ldr r2, =red_LED
+    ldr r1, =fiveS
+    ldr r1, [r1]
+    bl  turnOnLED
+    @ Turn off the Red LED.
+    ldr r2, =red_LED
+    bl  turnOffLED
+
    mov r7, #0x01 @ SVC call to exit
    mov r0, #0    @ Exit code 0
    svc 0         @ Make the system call. 
@@ -463,6 +656,16 @@ myexit:
 
 
 .data
+
+@ Define the values for the pins
+
+blue_LED   : .word BLUE
+green_LED  : .word GREEN
+yellow_LED : .word YELLOW
+red_LED    : .word RED
+
+oneS: .word 1000  @ Set delay for one second. 
+fiveS: .word 5000    @ Set delay for five seconds.
 
 @ Welcome message.
 .balign 4
@@ -624,5 +827,14 @@ input: .word 0
 @       To ignore these "white" characters use " $c" as the input pattern. This will
 @       ignore any of these non-printing characters the user may have entered.
 @
+
+@
+@  The following are defined in wiringPi.h
+@
+.extern wiringPiSetup 
+.extern delay
+.extern digitalWrite
+.extern pinMode
+
 
 @ End of code and end of file. Leave a blank line after this.
