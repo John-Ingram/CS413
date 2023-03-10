@@ -13,6 +13,7 @@
 @
 @ All number inputs are integers and all calculation results are 
 @ provided in integer format. Any fractional calculations are to be truncated. 
+@ To make the program, run make Ingram, to run it run ./Ingram
 
 
 
@@ -449,6 +450,7 @@ overflow:
    bl printf @ Call printf to print the  result
 
    bl wait_for_enter
+   
 
    @ Return to the prompt so the user can try again
    b prompt

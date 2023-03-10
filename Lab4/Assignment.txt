@@ -1,0 +1,48 @@
+our program will simulate the operation of a vending machine. The machine will dispense,
+upon reception of the correct amount of money, a choice of Gum, Peanuts, Cheese Crackers, or
+M&Ms. Your software will perform the following:
+1. Display a welcome message and instructions.
+2. Set the initial inventory to two (2) of each kind.
+3. Prompt the user for item selection. Gum (G), Peanuts (P), Cheese Crackers (C), or
+M&Ms (M). Reject any invalid selections.
+4. Confirm the customer’s selection.
+5. Prompt the user for the amount to enter: Gum ($0.50), Peanuts ($0.55), Cheese Crackers
+($0.65), or M&Ms ($1.00).
+6. Accept money inputs of dimes (D), quarters (Q), and one-dollar bills (B).
+7. If the customer selects an out of inventory item, prompt them to make another selection.
+8. Vending machine will shut down if the entire inventory reaches zero.
+9. Assume there is no limit on the amount of change the vending machine contains.
+10. Make provisions for a secret code that when entered will display the current inventory of
+items.
+Sample Processing
+Welcome to Mr. Zippy’s vending machine.
+Cost of Gum ($0.50), Peanuts ($0.55), Cheese Crackers ($0.65), or M&Ms ($1.00).
+Enter item selection: Gum (G), Peanuts (P), Cheese Crackers (C), or M&Ms (M)
+C
+You selected Cheese Crackers. Is this correct (Y/N)?
+Y
+Enter at least 65 cents for selection.
+Dimes (D), Quarters (Q) and dollar bills (B):
+B
+Enough money entered.
+Cheese Crackers have been dispensed.
+Change of 35 cents has been returned.
+Enter item selection: Gum (G), Peanuts (P), Cheese Crackers (C), or M&Ms (M)
+General Requirements:
+The student’s ARM Assembly code file needs to contain the following:
+1. Proper header information that include commands that assemble, link, run the file and run the file
+using the debugger that is specific for their file.
+Lab3 Set_3
+Lab 3 Advanced Program
+Vending Machine
+2. Data section that defines all the output strings.
+3. Code comment sections that describe the major sections of the code:
+a. Welcome message
+b. Cost of items message
+c. Prompt for selection
+d. Verify selection
+e. Prompt for payment until enough is entered
+f. Dispense item, update inventory and given change
+g. Exit program when inventory of all items reaches zero
+h. Go back to step b.
+i. Print inventory when secret code is entered.
