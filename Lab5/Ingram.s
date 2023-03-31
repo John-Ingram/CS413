@@ -176,10 +176,10 @@ ReadRED:
     BL     digitalRead 
     cmp    r0, #HIGH
     moveq  r8, r0
-    beq    ButtonLoop
+    beq    getSelection
  
     cmp    r8, #LOW
-    beq    ButtonLoop
+    beq    getSelection
  
     mov    r8, r0
     b      PedRED
